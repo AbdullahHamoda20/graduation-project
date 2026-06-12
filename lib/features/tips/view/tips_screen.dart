@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:pcos_app/core/constants/app_colors.dart';
 import 'package:pcos_app/core/shared/screen_size.dart';
+import 'package:pcos_app/features/home/view/root.dart';
+import 'package:provider/provider.dart';
+
+import '../../clinical_data/data/ClinicalDataProvider.dart';
 
 class TipsScreen extends StatefulWidget {
   TipsScreen({super.key});
@@ -13,6 +17,8 @@ class TipsScreen extends StatefulWidget {
 class _TipsScreenState extends State<TipsScreen> {
   @override
   Widget build(BuildContext context) {
+    final provider = context.watch<ClinicalDataProvider>();
+
     return Container(
       color: Colors.white,
       child: SafeArea(
@@ -107,13 +113,19 @@ class _TipsScreenState extends State<TipsScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 12),
             child: InkWell(
               onTap: () {
-                Navigator.popUntil(context, (route) => route.isFirst);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => RootScreen(), // next screen
+                  ),
+                );
+                provider.reset();
               },
               child: Container(
                 height: 50,
                 decoration: BoxDecoration(
                   color: AppColors.buttoColor,
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(30),
                 ),
                 child: Center(
                   child: Text(
@@ -134,10 +146,7 @@ class _TipsScreenState extends State<TipsScreen> {
   }
 
   // Tip Card Widget
-  Widget buildTipCard({
-    required String title,
-    required List<String> tips,
-  }) {
+  Widget buildTipCard({required String title, required List<String> tips}) {
     return Container(
       padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -162,33 +171,35 @@ class _TipsScreenState extends State<TipsScreen> {
               .entries
               .map(
                 (entry) => Padding(
-              padding: EdgeInsets.only(bottom: entry.key != tips.length - 1 ? 10 : 0),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    "• ",
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700,
-                      color: Colors.black,
-                    ),
+                  padding: EdgeInsets.only(
+                    bottom: entry.key != tips.length - 1 ? 10 : 0,
                   ),
-                  Gap(8),
-                  Expanded(
-                    child: Text(
-                      entry.value,
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                        color: Color(0xff5C5C5C),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "• ",
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.black,
+                        ),
                       ),
-                    ),
+                      Gap(8),
+                      Expanded(
+                        child: Text(
+                          entry.value,
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                            color: Color(0xff5C5C5C),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
-            ),
-          )
+                ),
+              )
               .toList(),
         ],
       ),
