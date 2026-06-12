@@ -11,14 +11,13 @@ class DioClint {
 
   bool _isRefreshing = false;
 
-  // 🧠 queue لل requests اللي تستنى
+
   final List<Function(String)> _retryQueue = [];
 
   DioClint() {
     _dio.interceptors.add(
       InterceptorsWrapper(
 
-        /// ✅ REQUEST
         onRequest: (options, handler) async {
           final token = await PrefHelper.getToken();
 
@@ -29,12 +28,12 @@ class DioClint {
           return handler.next(options);
         },
 
-        /// 🔥 ERROR
+
         onError: (error, handler) async {
 
           if (error.response?.statusCode == 401) {
 
-            // لو في refresh شغال → استنى
+
             if (_isRefreshing) {
 
               return _retryRequest(error.requestOptions, handler);
@@ -88,7 +87,6 @@ class DioClint {
     );
   }
 
-  /// 🧠 request يستنى refresh
   Future<void> _retryRequest(
       RequestOptions requestOptions,
       ErrorInterceptorHandler handler,
