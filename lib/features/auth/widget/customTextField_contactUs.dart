@@ -1,8 +1,11 @@
 
 import 'package:flutter/material.dart';
 
-Widget customTextField({required String label,required TextEditingController controller,  Function ?validator}) {
+Widget customTextField({required String label,required TextEditingController controller,  Function ?validator,
+  void Function(String) ? onChanged,readOnly = true ,TextInputType? keyboardType
+}) {
   return Container(
+
 
     decoration: BoxDecoration(
       borderRadius: BorderRadius.circular(10),
@@ -24,8 +27,8 @@ Widget customTextField({required String label,required TextEditingController con
           decoration: BoxDecoration(
             color: const Color(0xFFFCE4EC),
             borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(10),
-              bottomLeft: Radius.circular(10),
+              topLeft: Radius.circular(30),
+              bottomLeft: Radius.circular(30),
             ),
             border: Border.all(color: const Color(0xFFF8BBD0)),
           ),
@@ -35,8 +38,10 @@ Widget customTextField({required String label,required TextEditingController con
           child: SizedBox(
             height: 45,
             child: TextFormField(
-              // enabled: false,
-              readOnly: true,
+              onChanged: onChanged,
+              // enabled: enabled,
+              keyboardType:keyboardType ,
+              readOnly: readOnly,
               controller: controller,
               validator: null,
               decoration: InputDecoration(
@@ -45,22 +50,22 @@ Widget customTextField({required String label,required TextEditingController con
                 contentPadding: const EdgeInsets.symmetric(horizontal: 10),
                 enabledBorder: const OutlineInputBorder(
                   borderRadius: BorderRadius.only(
-                    topRight: Radius.circular(10),
-                    bottomRight: Radius.circular(10),
+                    topRight: Radius.circular(30),
+                    bottomRight: Radius.circular(30),
                   ),
                   borderSide: BorderSide(color: Color(0xFFF8BBD0)),
                 ),
                 focusedBorder: const OutlineInputBorder(
                   borderRadius: BorderRadius.only(
-                    topRight: Radius.circular(10),
-                    bottomRight: Radius.circular(10),
+                    topRight: Radius.circular(30),
+                    bottomRight: Radius.circular(30),
                   ),
                   borderSide: BorderSide(color: Color(0xFFE57385)),
                 ),
                 border: const OutlineInputBorder(
               borderRadius: BorderRadius.only(
-              topRight: Radius.circular(10),
-              bottomRight: Radius.circular(10),
+              topRight: Radius.circular(30),
+              bottomRight: Radius.circular(30),
             ),
             borderSide: BorderSide(color: Color(0xFFE57385)),
           ),

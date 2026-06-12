@@ -23,14 +23,14 @@ class CustomProfileTextFiled extends StatelessWidget {
           borderSide: BorderSide(
             color: Colors.blue,
             width: 1.5,
-          ), // سمك البوردر لما يكون فوكس
+          ),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
           borderSide: BorderSide(
             color: Colors.blue,
             width: 1.5,
-          ), // سمك البوردر لما يكون فوكس
+          ),
         ),
 
       ),

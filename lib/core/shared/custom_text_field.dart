@@ -12,11 +12,13 @@ class CustomTextField extends StatelessWidget {
   final double borderRadius;
   final bool isHint;
   final bool isLabel;
+  final bool hasPrefixIcon;
   final bool enabled;
   final String label;
   final TextStyle? labelStyle;
   final FloatingLabelBehavior? floatingLabelBehavior;
-
+   void Function(String)? onFieldSubmitted;
+  void Function(String) ? onChanged;
    CustomTextField({
     super.key,
     required this.controller,
@@ -29,12 +31,14 @@ class CustomTextField extends StatelessWidget {
     this.validator,
     this.keyboardType = TextInputType.text,
     this.isHint= true ,
-    this.isLabel=false,
+     this.isLabel=false,
+      this.hasPrefixIcon=true,
     this.label="",
     this.labelStyle,
      this.floatingLabelBehavior,
-      this.enabled = true
-
+      this.enabled = true,
+     this.onFieldSubmitted,
+      this.onChanged
   });
 
   @override
@@ -51,6 +55,8 @@ class CustomTextField extends StatelessWidget {
         ],
       ),
       child: TextFormField(
+        onChanged: onChanged,
+        onFieldSubmitted: onFieldSubmitted,
         controller: controller,
         validator: validator,
         obscureText: isPassword ? isObscure : false,
@@ -58,7 +64,7 @@ class CustomTextField extends StatelessWidget {
         decoration: InputDecoration(
           enabled: enabled,
             floatingLabelBehavior: floatingLabelBehavior,
-          prefixIcon: Icon(prefixIcon),
+          prefixIcon: hasPrefixIcon?Icon(prefixIcon):null,
           suffixIcon: isPassword
               ? IconButton(
             icon: Icon(
@@ -67,6 +73,10 @@ class CustomTextField extends StatelessWidget {
             onPressed: toggleObscure,
           )
               : null,
+          disabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(borderRadius),
+            borderSide: BorderSide(color: Color(0xffE5E5E5)),
+          ),
           border: OutlineInputBorder(),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(borderRadius),
