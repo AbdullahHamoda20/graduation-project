@@ -2,7 +2,6 @@ import 'package:dio/dio.dart';
 import 'package:pcos_app/core/network/api_error.dart';
 import 'package:pcos_app/core/network/api_exceptions.dart';
 import 'package:pcos_app/core/network/api_service.dart';
-import 'package:pcos_app/core/network/dio_clint.dart';
 import 'package:pcos_app/core/network/perf_helper.dart';
 import 'package:pcos_app/features/auth/data/auth_model.dart';
 
@@ -74,7 +73,6 @@ class AuthRepo{
     if (response.containsKey("errors")) {
      final errors = response["errors"] as Map<String, dynamic>;
 
-     // خد أول error
      final firstError = errors.values.first[0];
 
      throw ApiError(message: firstError);
@@ -195,12 +193,12 @@ Future <UserModel?> changePass({required String currentPass,required String newP
   try {
    final response = await apiServices.post("Contact/send", {"name": name, "email": email, "message": message},);
 
-   // 🟥 لو رجع ApiError
+
    if (response is ApiError) {
     throw response;
    }
 
-   // 🟩 success
+
    if (response is Map<String, dynamic>) {
     return response["message"] ?? "Message sent successfully";
    }
