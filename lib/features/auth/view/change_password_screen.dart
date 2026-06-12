@@ -2,11 +2,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:pcos_app/core/shared/AppValidations.dart';
-import 'package:pcos_app/core/shared/custom_button.dart';
 import 'package:pcos_app/core/shared/custom_text_field.dart';
 import 'package:pcos_app/core/shared/screen_size.dart';
 import 'package:pcos_app/features/auth/view/profile_screen.dart';
-
 import '../../../core/constants/app_assets.dart';
 import '../../../core/constants/app_strings.dart';
 import '../../../core/network/api_error.dart';
@@ -32,34 +30,69 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
    TextEditingController confirmPass=TextEditingController() ;
 
   AuthRepo authRepo = AuthRepo();
-  Future <void> updatePass () async {
-    setState(()=> isLoading=true );
-    try{
-      final user = await authRepo.changePass(currentPass: currentPass.text.trim(), newPass: newPass.text.trim(),confirmPass: confirmPass.text.trim());
-      setState(()=> isLoading=false );
-    }catch(e){
-      setState(()=> isLoading=false );
+  Future<void> updatePass() async {
+    setState(() => isLoading = true);
+
+    try {
+      final user = await authRepo.changePass(
+        currentPass: currentPass.text.trim(),
+        newPass: newPass.text.trim(),
+        confirmPass: confirmPass.text.trim(),
+      );
+
+      setState(() => isLoading = false);
+
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+          content: Row(
+            children: const [
+              Icon(Icons.check_circle, color: Colors.white),
+              SizedBox(width: 10),
+              Text(
+                "Password changed successfully",
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
+          backgroundColor: Colors.green,
+          behavior: SnackBarBehavior.floating,
+          margin: const EdgeInsets.only(bottom: 30, right: 20, left: 20),
+        ),
+      );
+    } catch (e) {
+      setState(() => isLoading = false);
 
       String errorMsg = "Unhandled Error";
-      if(e is ApiError){
+
+      if (e is ApiError) {
         errorMsg = e.message;
       }
+
+      if (!mounted) return;
+
       ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            behavior: SnackBarBehavior.floating,
-            clipBehavior: Clip.none,
-            padding: EdgeInsets.all(10),
-            margin: EdgeInsets.only(bottom: 30,right: 20,left: 20),
-            elevation: 10,
-            content: Row(
-              children: [
-                Icon(CupertinoIcons.info,color: Colors.white ,),
-                Gap(14),
-                Text(errorMsg,style: TextStyle(color: Colors.white,fontSize: 14,fontWeight: FontWeight.w600),),
-              ],
-            ),
-            backgroundColor: Colors.red.shade900,
-          )
+        SnackBar(
+          behavior: SnackBarBehavior.floating,
+          margin: const EdgeInsets.only(bottom: 30, right: 20, left: 20),
+          backgroundColor: const Color(0xffc65d90),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+          content: Row(
+            children: [
+              const Icon(Icons.info, color: Colors.white),
+              const SizedBox(width: 10),
+              Text(
+                errorMsg,
+                style: const TextStyle(color: Colors.white,fontSize: 16),
+              ),
+            ],
+          ),
+        ),
       );
     }
   }
@@ -159,28 +192,36 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                         floatingLabelBehavior: FloatingLabelBehavior.always,
                       ),
                       Gap(40),
-                  
-                      InkWell(
-                        onTap:  () {
+
+                      isLoading
+                          ? Center(
+                            child: CupertinoActivityIndicator(),
+                          )
+                          : InkWell(
+                        onTap: () {
                           if (_formKey.currentState!.validate()) {
                             updatePass();
                           }
                         },
                         child: Container(
+                          margin: EdgeInsets.symmetric(vertical: 15),
                           alignment: Alignment.center,
-                          height: ScreenSize(context).height*.08,
-                          width: ScreenSize(context).width*.914,
+                          height: ScreenSize(context).height * .08,
+                          // width: ScreenSize(context).width * .914,
                           decoration: BoxDecoration(
-                            color: Color(0xffE56D83),
-                            borderRadius: BorderRadius.circular(25),
+                            color: const Color(0xffE56D83),
+                            borderRadius: BorderRadius.circular(50),
                           ),
-                          child: Text(AppStrings.changePassword,style: TextStyle(
+                          child: const Text(
+                            AppStrings.changePassword,
+                            style: TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.w700,
-                              fontSize: 20
-                          ),),
+                              fontSize: 20,
+                            ),
+                          ),
                         ),
-                      )
+                      ),
                     ],
                   ),
                 ),
