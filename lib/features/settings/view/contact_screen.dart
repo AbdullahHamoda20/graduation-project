@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:gap/gap.dart';
+import 'package:pcos_app/core/constants/app_colors.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 import '../../auth/data/auth_model.dart';
@@ -9,23 +10,21 @@ import '../../auth/widget/customTextField_contactUs.dart';
 import '../../../core/network/api_error.dart';
 
 class ContactUsScreen extends StatefulWidget {
-      bool leadingIcon ;
+  bool leadingIcon;
 
-    ContactUsScreen({super.key,this.leadingIcon =true});
+  ContactUsScreen({super.key, this.leadingIcon = true});
 
   @override
   State<ContactUsScreen> createState() => _ContactUsScreenState();
 }
 
 class _ContactUsScreenState extends State<ContactUsScreen> {
-
   TextEditingController mail = TextEditingController();
   TextEditingController message = TextEditingController();
   TextEditingController name = TextEditingController();
 
-  bool isLoading = true;   // تحميل الداتا
-  bool isSending = false;  // ارسال الرسالة
-
+  bool isLoading = true; // تحميل الداتا
+  bool isSending = false; // ارسال الرسالة
 
   UserModel? userModel;
   AuthRepo authRepo = AuthRepo();
@@ -50,7 +49,6 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
         name.text = user?.username ?? "";
         mail.text = user?.email ?? "";
       });
-
     } catch (e) {
       if (!mounted) return;
 
@@ -84,6 +82,9 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
     if (message.text.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(30),
+          ),
           behavior: SnackBarBehavior.floating,
           margin: const EdgeInsets.only(bottom: 30, right: 20, left: 20),
           content: Row(
@@ -93,7 +94,7 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
               Text("Please enter your message"),
             ],
           ),
-          backgroundColor: Colors.red.shade900,
+          backgroundColor: AppColors.header,
         ),
       );
       return;
@@ -116,7 +117,10 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
           margin: const EdgeInsets.only(bottom: 30, right: 20, left: 20),
           content: Row(
             children: [
-              const Icon(CupertinoIcons.check_mark_circled, color: Colors.white),
+              const Icon(
+                CupertinoIcons.check_mark_circled,
+                color: Colors.white,
+              ),
               const Gap(10),
               Expanded(child: Text(responseMessage)),
             ],
@@ -126,7 +130,6 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
       );
 
       message.clear();
-
     } catch (e) {
       if (!mounted) return;
 
@@ -168,7 +171,7 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        automaticallyImplyLeading:  widget.leadingIcon,
+        automaticallyImplyLeading: widget.leadingIcon,
         scrolledUnderElevation: 0,
         title: const Text(
           "Contact Us",
@@ -190,7 +193,6 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-
                   const SizedBox(height: 30),
 
                   Skeletonizer(
@@ -208,13 +210,19 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
                   const SizedBox(height: 15),
 
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 10,
+                    ),
                     decoration: BoxDecoration(
                       color: const Color(0xFFFCE4EC),
                       borderRadius: BorderRadius.circular(10),
                       border: Border.all(color: const Color(0xFFF8BBD0)),
                     ),
-                    child: const Text("Message", style: TextStyle(color: Colors.black54)),
+                    child: const Text(
+                      "Message",
+                      style: TextStyle(color: Colors.black54),
+                    ),
                   ),
 
                   const SizedBox(height: 10),
@@ -226,7 +234,23 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
                       fillColor: Colors.white,
                       filled: true,
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(15),
+                        borderRadius: BorderRadius.circular(30),
+                        borderSide: BorderSide(
+                          color: Colors.pink.shade200,
+                          width: 1,
+                        ),
+                      ),
+                      disabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(30),
+                        borderSide: BorderSide(color: Colors.pink.shade200),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(30),
+                        borderSide: BorderSide(color: Colors.pink.shade200),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(30),
+                        borderSide: BorderSide(color: Colors.pink.shade200),
                       ),
                     ),
                   ),
@@ -240,18 +264,21 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
                     child: isSending
                         ? const CupertinoActivityIndicator()
                         : ElevatedButton(
-                      onPressed: isLoading ? null : sendMessage,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFFE57385),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(15),
-                        ),
-                      ),
-                      child: const Text(
-                        "Send",
-                        style: TextStyle(fontSize: 22, color: Colors.white),
-                      ),
-                    ),
+                            onPressed: isLoading ? null : sendMessage,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFFE57385),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(30),
+                              ),
+                            ),
+                            child: const Text(
+                              "Send",
+                              style: TextStyle(
+                                fontSize: 22,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
                   ),
                 ],
               ),
