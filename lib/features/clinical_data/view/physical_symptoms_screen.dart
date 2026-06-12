@@ -1,127 +1,259 @@
+import 'dart:developer';
+
+import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
-import 'package:pcos_app/core/constants/app_colors.dart';
-import 'package:pcos_app/core/constants/app_strings.dart';
-import 'package:pcos_app/core/shared/screen_size.dart';
-import 'package:pcos_app/features/clinical_data/data/clinical_data_model.dart';
-import 'package:pcos_app/features/clinical_data/view/demographic_info_screen.dart';
-import 'package:pcos_app/features/clinical_data/widget/reuseable_check_box.dart';
+import 'package:provider/provider.dart';
 
-class PhysicalSymptomsScreen extends StatefulWidget {
-  PhysicalSymptomsScreen({super.key});
+import '../../../core/constants/app_strings.dart';
+import '../../../core/shared/screen_size.dart';
+import '../data/ClinicalDataProvider.dart';
+import '../data/pcos_data_models.dart';
+import 'demographic_info_screen.dart';
 
-  @override
-  State<PhysicalSymptomsScreen> createState() => _PhysicalSymptomsScreenState();
-}
-
-class _PhysicalSymptomsScreenState extends State<PhysicalSymptomsScreen> {
-  final ClinicalDataModel data = ClinicalDataModel();
+class PhysicalSymptomsScreen extends StatelessWidget {
+  const PhysicalSymptomsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-        color: Colors.white
-        ,child: SafeArea(
-        maintainBottomViewPadding: true,
-        child: Scaffold(
-            backgroundColor: Colors.white,
-            appBar: AppBar(
-              scrolledUnderElevation: 0,
-              leading: GestureDetector(onTap:(){Navigator.pop(context);},child: Icon(Icons.arrow_back,color: Colors.black),),
-              title: Text("Clinical Data Input",style: TextStyle(color: Color(0xffDA5F71),fontWeight: FontWeight.w700,fontSize: 20),),
-              centerTitle: true,
+    final provider = context.watch<ClinicalDataProvider>();
+
+    ClinicalDataModel data = provider.data;
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (didPop) return;
+
+        provider.reset();
+        Navigator.pop(context);
+      },
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        appBar: AppBar(
+          scrolledUnderElevation: 0,
+          leading: GestureDetector(
+            onTap: () {
+              provider.reset();
+              Navigator.pop(context);
+            },
+            child: const Icon(Icons.arrow_back, color: Colors.black),
+          ),
+          title: const Text(
+            "Clinical Data Input",
+            style: TextStyle(
+              color: Color(0xffDA5F71),
+              fontWeight: FontWeight.w700,
+              fontSize: 20,
             ),
-            body: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 15.0),
-                child: SafeArea(
-                  // bottom: false,
-                    child: SingleChildScrollView(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                        Text(AppStrings.physicalSymptoms,textAlign: TextAlign.start,style: TextStyle(color: Colors.black,fontWeight: FontWeight.w800,fontSize: 16),),
-                      Gap(ScreenSize(context).height*.02),
-                      Text(AppStrings.selectAllApply,style: TextStyle(fontSize:15,fontWeight: FontWeight.w600,color: Color(0xffD63F67) ),),
-                      Gap(ScreenSize(context).height*.02),
-                      Text(AppStrings.hairGrowth,style: TextStyle(fontSize:15,fontWeight: FontWeight.w600,color: Color(0xff5C5C5C) ),),
-                      Gap(ScreenSize(context).height*.01),
-                      buildCheckItem(title: AppStrings.hairGrowthDesc, value: data.hairGrowth, onChanged: (value) {  setState(() {data.hairGrowth = value!;});} ,),
-                      Gap(ScreenSize(context).height*.01),
-                      Text(AppStrings.skinChanges,style: TextStyle(fontSize:15,fontWeight: FontWeight.w600,color: Color(0xff5C5C5C) ),),
-                      Gap(ScreenSize(context).height*.01),
-                      buildCheckItem(title: AppStrings.skinChangesDesc, value: data.skinDarkening, onChanged: (value) {setState(() {data.skinDarkening = value!;});},),
-                      Gap(ScreenSize(context).height*.01),
-                      Text(AppStrings.weightChanges,style: TextStyle(fontSize:15,fontWeight: FontWeight.w600,color: Color(0xff5C5C5C) ),),
-                      Gap(ScreenSize(context).height*.01),
-                      buildCheckItem(title: AppStrings.weightChangesDesc1, value: data.weightGain, onChanged: (value) {  setState(() { data.weightGain = value!;});} ,),
-                      Gap(ScreenSize(context).height*.012),
-                      buildCheckItem(title: AppStrings.weightChangesDesc2,value: data.difficultyLosingWeight, onChanged: (value) {  setState(() {  data.difficultyLosingWeight = value!;});} ,),
-                      Gap(ScreenSize(context).height*.01),
-                      Text(AppStrings.acnePimples,style: TextStyle(fontSize:15,fontWeight: FontWeight.w600,color: Color(0xff5C5C5C) ),),
-                      Gap(ScreenSize(context).height*.01),
-                      buildCheckItem(title: AppStrings.acneDesc, value: data.pimples, onChanged: (value) {  setState(() { data.pimples = value!;});} ,),
-                      Gap(ScreenSize(context).height*.01),
-                          Text(AppStrings.hairLoss,style: TextStyle(fontSize:15,fontWeight: FontWeight.w600,color: Color(0xff5C5C5C) ),),
-                          Gap(ScreenSize(context).height*.01),
-                          buildCheckItem(title:AppStrings.hairLossDesc, value:  data.hairLoss, onChanged: (value) {  setState(() { data.hairLoss = value!;});} ,),
-                          Gap(ScreenSize(context).height*.1),
-                        ],
-                      ),
-                    ),
-                ),
-            ),
-          bottomSheet: Container(
-            color: Colors.white,
-            height: 60,
-            padding: const EdgeInsets.symmetric(horizontal: 8),
-            child: Row(
+          ),
+          centerTitle: true,
+        ),
+
+        body: SingleChildScrollView(
+          physics: const BouncingScrollPhysics(),
+          child: Padding(
+            padding: const EdgeInsets.only(right: 5, left: 25),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                // EDIT PROFILE
-                Expanded(
-                  child: InkWell(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) =>  DemographicInfoScreen(),
-                        ),
-                      );
-                      print(data.toString());
-                    },
-                    child: Container(
-                      margin: EdgeInsets.symmetric(horizontal: 50),
-                      height: 60,
-                      decoration: BoxDecoration(
-                        color: AppColors.buttoColor,
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: Colors.black),
-                      ),
-                      child: Center(
-                        child:  Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              'Next',
-                              style: TextStyle(
-                                fontSize: 18,
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            Gap(12),
-                            Icon(Icons.arrow_forward, color: Colors.white),
-                          ],
-                        ),
-                      ),
-                    ),
+                Gap(ScreenSize(context).height * .025),
+
+                const Text(
+                  AppStrings.physicalSymptoms,
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w800,
+                    color: Color(0xff464646),
                   ),
                 ),
 
+                Gap(ScreenSize(context).height * .02),
+
+                const Text(
+                  AppStrings.selectAllApply,
+                  style: TextStyle(
+                    color: Color(0xffD63F67),
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+
+                Gap(ScreenSize(context).height * .02),
+
+                /// Hair Growth
+                const Text(
+                  AppStrings.hairGrowth,
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 16,
+                    color: Color(0xff5C5C5C),
+                  ),
+                ),
+
+                CheckboxListTile(
+                  title: const Text(
+                    AppStrings.hairGrowthDesc,
+                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                  ),
+                  value: data.hairGrowth ?? false,
+                  onChanged: (value) {
+                    provider.setHairGrowth(value ?? false);
+                  },
+                  controlAffinity: ListTileControlAffinity.leading,
+                ),
+
+                /// Skin Changes
+                const Text(
+                  AppStrings.skinChanges,
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 16,
+                    color: Color(0xff5C5C5C),
+                  ),
+                ),
+
+                CheckboxListTile(
+                  title: const Text(
+                    AppStrings.skinChangesDesc,
+                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                  ),
+                  value: data.skinDarkening ?? false,
+                  onChanged: (value) {
+                    provider.setSkinDarkening(value ?? false);
+                  },
+                  controlAffinity: ListTileControlAffinity.leading,
+                ),
+
+                /// Weight Changes
+                const Text(
+                  AppStrings.weightChanges,
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 16,
+                    color: Color(0xff5C5C5C),
+                  ),
+                ),
+
+                CheckboxListTile(
+                  title: const Text(
+                    AppStrings.weightChangesDesc1,
+                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                  ),
+                  value: data.weightGain ?? false,
+                  onChanged: (value) {
+                    provider.setWeightGain(value ?? false);
+                  },
+                  controlAffinity: ListTileControlAffinity.leading,
+                ),
+
+                CheckboxListTile(
+                  title: const Text(
+                    AppStrings.weightChangesDesc2,
+                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                  ),
+                  value: data.difficultyLosingWeight ?? false,
+                  onChanged: (value) {
+                    provider.setDifficultyLosingWeight(value ?? false);
+                  },
+                  controlAffinity: ListTileControlAffinity.leading,
+                ),
+
+                /// Acne
+                const Text(
+                  AppStrings.acnePimples,
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 16,
+                    color: Color(0xff5C5C5C),
+                  ),
+                ),
+
+                CheckboxListTile(
+                  title: const Text(
+                    AppStrings.acneDesc,
+                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                  ),
+                  value: data.pimples ?? false,
+                  onChanged: (value) {
+                    provider.setPimples(value ?? false);
+                  },
+                  controlAffinity: ListTileControlAffinity.leading,
+                ),
+
+                /// Hair Loss
+                const Text(
+                  AppStrings.hairLoss,
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 16,
+                    color: Color(0xff5C5C5C),
+                  ),
+                ),
+
+                CheckboxListTile(
+                  title: const Text(
+                    AppStrings.hairLossDesc,
+                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                  ),
+                  value: data.hairLoss ?? false,
+                  onChanged: (value) {
+                    provider.setHairLoss(value ?? false);
+                    log(data.toApiJson().toString());
+                  },
+                  controlAffinity: ListTileControlAffinity.leading,
+                ),
+
+                Gap(ScreenSize(context).height * .14),
               ],
             ),
           ),
         ),
-    ),
+
+        bottomSheet: Container(
+          width: double.infinity,
+          color: Colors.white,
+          child: Container(
+            color: Colors.transparent,
+            margin: EdgeInsets.only(
+              bottom: 25,
+              right: ScreenSize(context).width * 0.25,
+              left: ScreenSize(context).width * 0.25,
+            ),
+            child: GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const DemographicInfoScreen(),
+                  ),
+                );
+              },
+              child: Container(
+                padding: const EdgeInsets.symmetric(vertical: 14),
+                decoration: BoxDecoration(
+                  color: const Color(0xffE56D83),
+                  borderRadius: BorderRadius.circular(30),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text(
+                      AppStrings.next,
+                      style: TextStyle(
+                        fontWeight: FontWeight.w400,
+                        fontSize: 20,
+                        color: Colors.white,
+                      ),
+                    ),
+                    Gap(ScreenSize(context).width * .02),
+                    const Icon(Icons.arrow_forward, color: Colors.white),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

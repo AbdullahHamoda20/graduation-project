@@ -4,6 +4,7 @@ import 'package:gap/gap.dart';
 import 'package:pcos_app/core/constants/app_colors.dart';
 import 'package:pcos_app/core/constants/app_strings.dart';
 import 'package:pcos_app/core/network/api_error.dart';
+import 'package:pcos_app/core/network/perf_helper.dart';
 import 'package:pcos_app/core/shared/AppValidations.dart';
 import 'package:pcos_app/core/shared/custom_button.dart';
 import 'package:pcos_app/core/shared/screen_size.dart';
@@ -23,42 +24,66 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   bool isObscure = true;
-  bool isLoading =false;
+  bool isLoading = false;
   bool rememberMeController = false;
-  TextEditingController emailController = TextEditingController() ;
-  TextEditingController passwordController = TextEditingController() ;
+  TextEditingController emailController = TextEditingController();
+
+  TextEditingController passwordController = TextEditingController();
+
   AuthRepo authRepo = AuthRepo();
-  Future <void> login () async {
-    setState(()=> isLoading=true );
-    try{
-      final user = await authRepo.login(emailController.text.trim(), passwordController.text.trim());
-      if(user!=null){
-        Navigator.push(context, MaterialPageRoute(builder: (c)=> AfterLogin()));
+
+  Future<void> login() async {
+    setState(() => isLoading = true);
+    try {
+      final user = await authRepo.login(
+        emailController.text.trim(),
+        passwordController.text.trim(),
+      );
+      if (user != null) {
+        await PrefHelper.saveToken(user.token);
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (c) => AfterLogin()),
+        );
       }
-      setState(()=> isLoading=false );
-    }catch(e){
-      setState(()=> isLoading=false );
+      setState(() => isLoading = false);
+    } catch (e) {
+      setState(() => isLoading = false);
 
       String errorMsg = "Unhandled Error";
-      if(e is ApiError){
+      if (e is ApiError) {
         errorMsg = e.message;
       }
       ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            behavior: SnackBarBehavior.floating,
-            clipBehavior: Clip.none,
-            padding: EdgeInsets.all(10),
-              margin: EdgeInsets.only(bottom: 30,right: 20,left: 20),
-              elevation: 10,
-              content: Row(
-                children: [
-                  Icon(CupertinoIcons.info,color: Colors.white ,),
-                  Gap(14),
-                  Text(errorMsg,style: TextStyle(color: Colors.white,fontSize: 14,fontWeight: FontWeight.w600),),
-                ],
+        SnackBar(
+          behavior: SnackBarBehavior.floating,
+          clipBehavior: Clip.none,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(30),
+          ),
+          padding: EdgeInsets.all(10),
+          margin: EdgeInsets.only(
+            bottom: ScreenSize(context).height * 0.25,
+            right: 20,
+            left: 20,
+          ),
+          elevation: 10,
+          content: Row(
+            children: [
+              Icon(CupertinoIcons.info, color: Colors.white),
+              Gap(14),
+              Text(
+                errorMsg,
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
-            backgroundColor: Colors.red.shade900,
-          )
+            ],
+          ),
+          backgroundColor: AppColors.header,
+        ),
       );
     }
   }
@@ -73,12 +98,12 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return AuthLayout(
-      child:Form(
+      child: Form(
         key: _formKey,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Gap(ScreenSize(context).height*0.13),
+            Gap(ScreenSize(context).height * 0.13),
             Text(
               AppStrings.login,
               textAlign: TextAlign.center,
@@ -86,16 +111,17 @@ class _LoginScreenState extends State<LoginScreen> {
                 color: AppColors.header,
                 fontWeight: FontWeight.w700,
                 fontSize: 40,
-              ),),
-            Gap(ScreenSize(context).height*.04),
+              ),
+            ),
+            Gap(ScreenSize(context).height * .04),
             CustomTextField(
               controller: emailController,
               hint: AppStrings.email,
               prefixIcon: CupertinoIcons.mail_solid,
               keyboardType: TextInputType.emailAddress,
-              validator: AppValidations.validateEmail
+              validator: AppValidations.validateEmail,
             ),
-            Gap(ScreenSize(context).height*.03),
+            Gap(ScreenSize(context).height * .03),
             CustomTextField(
               controller: passwordController,
               hint: AppStrings.password,
@@ -107,82 +133,93 @@ class _LoginScreenState extends State<LoginScreen> {
                   isObscure = !isObscure;
                 });
               },
-                keyboardType: TextInputType.visiblePassword,
-              validator: AppValidations.validatePassword
+              keyboardType: TextInputType.visiblePassword,
+              validator: AppValidations.validatePassword,
             ),
-            Gap(ScreenSize(context).height*.04),
-            Row(
-              children: [
-                InkWell(
-                  borderRadius: BorderRadius.circular(20),
-                  onTap: () {
-                    setState(() {
-                      rememberMeController = !rememberMeController;
-                    });
-                  },
-                  child: Row(
-                    children: [
-                      Checkbox(
-                        value: rememberMeController,
-                        onChanged: (value) {
-                          setState(() {
-                            rememberMeController = value!;
-                          });
-                        },
-                        activeColor: AppColors.header,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(5),
-                        ),
-                      ),
-                      Text(
-                        AppStrings.rememberMe,
-                        style: TextStyle(
-                          color: Color(0xffD63F67),
-                          fontWeight: FontWeight.w500,
-                          fontSize: 14,
-                        ),
-                      ),
-                    ],
+            Gap(ScreenSize(context).height * .04),
+            // Row(
+            //   children: [
+            //     InkWell(
+            //       borderRadius: BorderRadius.circular(20),
+            //       onTap: () {
+            //         setState(() {
+            //           rememberMeController = !rememberMeController;
+            //         });
+            //       },
+            //       child: Row(
+            //         children: [
+            //           Checkbox(
+            //             value: rememberMeController,
+            //             onChanged: (value) {
+            //               setState(() {
+            //                 rememberMeController = value!;
+            //               });
+            //             },
+            //             activeColor: AppColors.header,
+            //             shape: RoundedRectangleBorder(
+            //               borderRadius: BorderRadius.circular(5),
+            //             ),
+            //           ),
+            //           Text(
+            //             AppStrings.rememberMe,
+            //             style: TextStyle(
+            //               color: Color(0xffD63F67),
+            //               fontWeight: FontWeight.w500,
+            //               fontSize: 14,
+            //             ),
+            //           ),
+            //         ],
+            //       ),
+            //     ),
+            //     Spacer(),
+            //     TextButton(onPressed: (){}, child: Text(AppStrings.forgotPassword,style: TextStyle(
+            //         fontSize: 14,
+            //         fontWeight: FontWeight.w700,
+            //         color: AppColors.header
+            //     ),))
+            //   ],
+            // ),
+            Gap(ScreenSize(context).height * .03),
+            isLoading
+                ? CupertinoActivityIndicator()
+                : CustomButton(
+                    text: AppStrings.login,
+                    onTap: () {
+                      if (_formKey.currentState!.validate()) {
+                        login();
+                      }
+                    },
                   ),
-                ),
-                Spacer(),
-                TextButton(onPressed: (){}, child: Text(AppStrings.forgotPassword,style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.header
-                ),))
-              ],
-            ),
-            Gap(ScreenSize(context).height*.03),
-            isLoading ? CupertinoActivityIndicator():
-            CustomButton(
-              text: AppStrings.login,
-              onTap: () {
-                if (_formKey.currentState!.validate()) {
-                  login();
-                }
-              },
-            ),
-            Gap(ScreenSize(context).height*.02),
+            Gap(ScreenSize(context).height * .02),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
                   AppStrings.noAccount,
-                  style: TextStyle(fontSize: 16,fontWeight: FontWeight.w500,color: Color(0xff656565)),
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                    color: Color(0xff656565),
+                  ),
                 ),
-                TextButton(onPressed: (){
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(builder: (_) => const SignupScreen()),
-                  );
-                }, child: Text(AppStrings.signup,style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.header
-                ),))
+                TextButton(
+                  onPressed: () {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (_) => const SignupScreen()),
+                    );
+                  },
+                  child: Text(
+                    AppStrings.signup,
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.header,
+                    ),
+                  ),
+                ),
               ],
-            )
+            ),
           ],
         ),
       ),

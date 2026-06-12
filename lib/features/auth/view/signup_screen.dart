@@ -51,6 +51,7 @@ class _SignupScreenState extends State<SignupScreen> {
             behavior: SnackBarBehavior.floating,
             clipBehavior: Clip.none,
             padding: EdgeInsets.all(10),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
             margin: EdgeInsets.only(bottom: 30,right: 20,left: 20),
             elevation: 10,
             content: Row(
@@ -60,8 +61,9 @@ class _SignupScreenState extends State<SignupScreen> {
                 Text(errMs,style: TextStyle(color: Colors.white,fontSize: 14,fontWeight: FontWeight.w600,overflow: TextOverflow.ellipsis),),
               ],
             ),
-            backgroundColor: Colors.red.shade900,
-          ));
+        backgroundColor: AppColors.header,
+
+      ));
     }
   }
   @override

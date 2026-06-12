@@ -16,10 +16,25 @@ class SettingsScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor:Color(0xffDA5F71),
+        backgroundColor: Color(0xffDA5F71),
         scrolledUnderElevation: 0,
-        leading: GestureDetector(onTap:(){Navigator.push(context, MaterialPageRoute(builder:(c)=> RootScreen()));},child: Icon(Icons.arrow_back,color: Colors.white),),
-        title: Text(AppStrings.settings,style: TextStyle(color: Colors.white,fontWeight: FontWeight.w700,fontSize: 20),),
+        leading: GestureDetector(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (c) => RootScreen()),
+            );
+          },
+          child: Icon(Icons.arrow_back, color: Colors.white),
+        ),
+        title: Text(
+          AppStrings.settings,
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.w700,
+            fontSize: 20,
+          ),
+        ),
         centerTitle: true,
       ),
       body: SafeArea(
@@ -30,33 +45,57 @@ class SettingsScreen extends StatelessWidget {
             children: [
               SizedBox(height: 40),
 
-              buildItem(context, Icons.person, "Your Profile", primaryPink, ProfileScreen()),
-
-
-              buildItem(context, Icons.info_outline, "About Us", primaryPink, AboutUsScreen()),
-
-
-              buildItem(context, Icons.email, "Contact Us", primaryPink, ContactUsScreen()),
-
-
-            ListTile(
-              // Padding
-              contentPadding: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
-              leading: Icon(Icons.logout, color: AppColors.buttoColor, size: 30),
-              title: Text(
-                AppStrings.logout,
-                style: TextStyle(
-                  color: Colors.grey[700],
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
+              buildItem(
+                context,
+                Icons.person,
+                "Your Profile",
+                primaryPink,
+                ProfileScreen(),
               ),
-              onTap: () {
-                    PrefHelper.clearToken();
-                    Navigator.pushReplacement(context, MaterialPageRoute(builder: (c)=>LoginScreen()));
-                }
 
-  ),
+              buildItem(
+                context,
+                Icons.info_outline,
+                "About Us",
+                primaryPink,
+                AboutUsScreen(),
+              ),
+
+              buildItem(
+                context,
+                Icons.email,
+                "Contact Us",
+                primaryPink,
+                ContactUsScreen(),
+              ),
+
+              ListTile(
+                // Padding
+                contentPadding: EdgeInsets.symmetric(
+                  vertical: 5,
+                  horizontal: 10,
+                ),
+                leading: Icon(
+                  Icons.logout,
+                  color: AppColors.buttoColor,
+                  size: 30,
+                ),
+                title: Text(
+                  AppStrings.logout,
+                  style: TextStyle(
+                    color: Colors.grey[700],
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                onTap: () {
+                  PrefHelper.clearToken();
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (c) => LoginScreen()),
+                  );
+                },
+              ),
             ],
           ),
         ),
@@ -64,7 +103,13 @@ class SettingsScreen extends StatelessWidget {
     );
   }
 
-  Widget buildItem(BuildContext context, IconData icon, String title, Color color, Widget? page) {
+  Widget buildItem(
+    BuildContext context,
+    IconData icon,
+    String title,
+    Color color,
+    Widget? page,
+  ) {
     return ListTile(
       // Padding
       contentPadding: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
@@ -79,7 +124,10 @@ class SettingsScreen extends StatelessWidget {
       ),
       onTap: () {
         if (page != null) {
-          Navigator.push(context, MaterialPageRoute(builder: (context) => page));
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => page),
+          );
         }
       },
     );

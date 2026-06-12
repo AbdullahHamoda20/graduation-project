@@ -43,7 +43,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
         nameController.text = user?.username ?? "";
         emailController.text = user?.email ?? "";
       });
-
     } catch (e) {
       String errorMsg = "Error in Profile";
 
@@ -51,9 +50,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
         errorMsg = e.message;
       }
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(errorMsg)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(errorMsg)));
     }
   }
 
@@ -72,15 +71,27 @@ class _ProfileScreenState extends State<ProfileScreen> {
       });
 
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("Profile updated successfully"),
-          backgroundColor: Colors.green,
+        SnackBar(
+          content: Row(
+            children: [
+              Icon(CupertinoIcons.info, color: Colors.white),
+              Gap(10),
+              const Text("Profile updated successfully"),
+            ],
+          ),
+          backgroundColor: const Color(0xffc65d90),
+          behavior: SnackBarBehavior.floating,
+          clipBehavior: Clip.none,
+          padding: const EdgeInsets.all(20),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(30),
+          ),
+          margin: const EdgeInsets.only(bottom: 180, right: 20, left: 20),
         ),
       );
 
       // refresh data
       await getProfileData();
-
     } catch (e) {
       String errorMsg = "Failed to update profile";
 
@@ -89,12 +100,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
       }
 
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(errorMsg),
-          backgroundColor: Colors.red,
-        ),
+        SnackBar(content: Text(errorMsg), backgroundColor: AppColors.header),
       );
-
     } finally {
       setState(() => isLoading = false);
     }
@@ -120,13 +127,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
+        backgroundColor: Colors.white,
         appBar: AppBar(
           scrolledUnderElevation: 0,
           leading: GestureDetector(
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (_) =>  SettingsScreen()),
+                MaterialPageRoute(builder: (_) => SettingsScreen()),
               );
             },
             child: const Icon(Icons.arrow_back, color: Colors.black),
@@ -156,20 +164,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     CustomTextField(
                       controller: nameController,
                       prefixIcon: CupertinoIcons.person_alt,
-                      borderRadius: 10,
+                      borderRadius: 30,
                       isLabel: true,
-                      label: "User Name",
+                      label: "    User Name",
                       validator: AppValidations.validateName,
                     ),
 
                     const Gap(40),
 
                     CustomTextField(
+                      enabled: false,
                       controller: emailController,
                       prefixIcon: CupertinoIcons.mail_solid,
-                      borderRadius: 10,
+                      borderRadius: 30,
                       isLabel: true,
-                      label: "Email",
+                      label: "    Email",
                       validator: AppValidations.validateEmail,
                     ),
                   ],
@@ -181,86 +190,83 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
         // ---------------- BOTTOM BUTTONS ----------------
         bottomSheet: Container(
-          height: 100,
-          padding: const EdgeInsets.symmetric(horizontal: 8),
-          child: Row(
+          color: Colors.white,
+          height: 200,
+          padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 30),
+          child: Column(
             children: [
               // EDIT PROFILE
-              Expanded(
-                child: InkWell(
-                  onTap: () {
-                    if (isLoading) return;
+              InkWell(
+                onTap: () {
+                  if (isLoading) return;
 
-                    if (_formKey.currentState!.validate()) {
-                      updateProfile();
-                    }
-                  },
-                  child: Container(
-                    height: 60,
-                    decoration: BoxDecoration(
-                      color: AppColors.buttoColor,
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: Colors.black),
-                    ),
-                    child: Center(
-                      child: isLoading
-                          ? const CupertinoActivityIndicator()
-                          : const Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            'Edit Profile',
-                            style: TextStyle(
-                              fontSize: 18,
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                            ),
+                  if (_formKey.currentState!.validate()) {
+                    updateProfile();
+                  }
+                },
+                child: Container(
+                  height: 60,
+                  decoration: BoxDecoration(
+                    color: AppColors.buttoColor,
+                    borderRadius: BorderRadius.circular(30),
+                    border: Border.all(color: Colors.transparent),
+                  ),
+                  child: Center(
+                    child: isLoading
+                        ? const CupertinoActivityIndicator()
+                        : const Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.edit_document, color: Colors.white),
+                              Gap(8),
+                              Text(
+                                'Edit Profile',
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
                           ),
-                          Gap(8),
-                          Icon(Icons.edit_document, color: Colors.white),
-                        ],
-                      ),
-                    ),
                   ),
                 ),
               ),
 
-              const Gap(10),
+              const Gap(20),
 
               // CHANGE PASSWORD
-              Expanded(
-                child: InkWell(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => const ChangePasswordScreen(),
-                      ),
-                    );
-                  },
-                  child: Container(
-                    height: 60,
-                    decoration: BoxDecoration(
-                      color: AppColors.buttoColor,
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: Colors.black),
+              InkWell(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const ChangePasswordScreen(),
                     ),
-                    child: const Center(
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            'Update Pass',
-                            style: TextStyle(
-                              fontSize: 18,
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                            ),
+                  );
+                },
+                child: Container(
+                  height: 60,
+                  decoration: BoxDecoration(
+                    color: AppColors.buttoColor,
+                    borderRadius: BorderRadius.circular(30),
+                    border: Border.all(color: Colors.transparent),
+                  ),
+                  child: const Center(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.password_outlined, color: Colors.white),
+                        Gap(8),
+                        Text(
+                          'Update Pass',
+                          style: TextStyle(
+                            fontSize: 18,
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
                           ),
-                          Gap(8),
-                          Icon(Icons.password_outlined, color: Colors.white),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                   ),
                 ),

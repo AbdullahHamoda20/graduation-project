@@ -1,6 +1,7 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
 class PrefHelper {
+  static const _onboardingKey = "onboarding_seen";
   static const String _accessTokenKey = 'access_token';
   static const String _refreshTokenKey = 'refresh_token';
 
@@ -43,5 +44,16 @@ class PrefHelper {
   static Future<void> clearAll() async {
     final pref = await SharedPreferences.getInstance();
     await pref.clear();
+  }
+
+  // ONBOARDING
+  static Future<void> setOnboardingSeen() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_onboardingKey, true);
+  }
+
+  static Future<bool> getOnboardingSeen() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(_onboardingKey) ?? false;
   }
 }

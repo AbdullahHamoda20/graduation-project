@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:pcos_app/features/onboarding/view/onBoarding_screen.dart';
 import '../../../core/constants/app_assets.dart';
 import '../../../core/constants/app_colors.dart';
-import '../../../core/constants/app_routes.dart';
+import '../../../core/network/perf_helper.dart';
+import '../../auth/view/login_screen.dart';
+import '../../home/view/root.dart';
+import '../../onboarding/view/onBoarding_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -19,24 +21,48 @@ class _SplashScreenState extends State<SplashScreen>
   @override
   void initState() {
     super.initState();
+
     _controller = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 1200),
     )..repeat(reverse: true);
+
     _scaleAnimation = Tween<double>(
       begin: 0.85,
       end: 1.15,
     ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
 
-    Future.delayed(const Duration(seconds: 4), () {
-      if (mounted) {
-        // Navigator.pushReplacementNamed(context, AppRoutes.onBoardingScreen);
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (_) => const OnboardingScreen()),
-        );
-      }
-    });
+    _goNext();
+  }
+
+  Future<void> _goNext() async {
+    await Future.delayed(const Duration(seconds: 3));
+
+    final token = await PrefHelper.getToken();
+    final seenOnboarding = await PrefHelper.getOnboardingSeen();
+
+    if (!mounted) return;
+
+    if (token != null && token.isNotEmpty) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => const RootScreen()),
+      );
+      return;
+    }
+
+    if (!seenOnboarding) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => const OnboardingScreen()),
+      );
+      return;
+    }
+
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (_) => const LoginScreen()),
+    );
   }
 
   @override
@@ -48,6 +74,7 @@ class _SplashScreenState extends State<SplashScreen>
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
+
     return Scaffold(
       body: Container(
         width: double.infinity,

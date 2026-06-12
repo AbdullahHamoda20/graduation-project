@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:gap/gap.dart';
 
 import '../../../core/constants/app_assets.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_strings.dart';
+import '../../../core/network/perf_helper.dart';
 import '../../auth/view/login_screen.dart';
-
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -17,13 +18,15 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   final PageController _controller = PageController();
   int currentIndex = 0;
 
-  void nextPage() {
+  void nextPage() async {
     if (currentIndex < 3) {
       _controller.nextPage(
         duration: const Duration(milliseconds: 400),
         curve: Curves.easeInOut,
       );
     } else {
+      await PrefHelper.setOnboardingSeen();
+
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (_) => const LoginScreen()),
@@ -81,39 +84,36 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       body: SafeArea(
         child: Column(
           children: [
-
             /// Top Row
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-
                   currentIndex != 0
                       ? TextButton(
-                    onPressed: previousPage,
-                    child: const Text(
-                      AppStrings.back,
-                      style: TextStyle(
-                        color: AppColors.back_skip_buttons,
-                      ),
-                    ),
-                  )
+                          onPressed: previousPage,
+                          child: const Text(
+                            AppStrings.back,
+                            style: TextStyle(
+                              color: AppColors.back_skip_buttons,
+                            ),
+                          ),
+                        )
                       : const SizedBox(),
 
                   TextButton(
-                    onPressed: () {
+                    onPressed: () async {
+                      await PrefHelper.setOnboardingSeen();
+
                       Navigator.pushReplacement(
                         context,
-                        MaterialPageRoute(
-                            builder: (_) => const LoginScreen()),
+                        MaterialPageRoute(builder: (_) => const LoginScreen()),
                       );
                     },
                     child: const Text(
                       AppStrings.skip,
-                      style: TextStyle(
-                        color: AppColors.back_skip_buttons,
-                      ),
+                      style: TextStyle(color: AppColors.back_skip_buttons),
                     ),
                   ),
                 ],
@@ -156,9 +156,16 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     ),
                   ),
                   onPressed: nextPage,
-                  child: const Text(
-                    "${AppStrings.next} →",
-                    style: TextStyle(fontSize: 18, color: Colors.white),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Text(
+                        AppStrings.next,
+                        style: TextStyle(fontSize: 18, color: Colors.white),
+                      ),
+                      Gap(10),
+                      const Icon(Icons.arrow_forward, color: Colors.white),
+                    ],
                   ),
                 ),
               ),
@@ -181,14 +188,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       padding: const EdgeInsets.symmetric(horizontal: 30),
       child: Column(
         children: [
-
           const SizedBox(height: 30),
 
-          Image.asset(
-            image,
-            height: 270,
-            fit: BoxFit.contain,
-          ),
+          Image.asset(image, height: 270, fit: BoxFit.contain),
 
           const Spacer(),
 
@@ -223,15 +225,17 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   /// Fourth Page
   Widget _buildFourthPage() {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 30),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const SizedBox(height: 30),
+          // const SizedBox(height: 10),
           Image.asset(
             AppAssets.lastOnboardingScreenImage,
             fit: BoxFit.cover,
+            height: 150,
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 30),
           const Text(
             AppStrings.onboarding4Title,
             textAlign: TextAlign.center,
@@ -241,7 +245,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               color: AppColors.header,
             ),
           ),
-          const SizedBox(height: 25),
+          const SizedBox(height: 20),
           _buildPoint(AppStrings.onboarding4Point1),
           const SizedBox(height: 10),
           _buildPoint(AppStrings.onboarding4Point2),
@@ -257,7 +261,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-
         Container(
           margin: const EdgeInsets.only(top: 4),
           width: 18,
@@ -266,11 +269,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             color: AppColors.buttoColor,
             shape: BoxShape.circle,
           ),
-          child: const Icon(
-            Icons.check,
-            size: 12,
-            color: Colors.white,
-          ),
+          child: const Icon(Icons.check, size: 12, color: Colors.white),
         ),
 
         const SizedBox(width: 10),

@@ -14,7 +14,6 @@ class RootScreen extends StatefulWidget {
 }
 
 class _RootScreenState extends State<RootScreen> {
-
   late PageController pageController;
   late List<Widget> screens;
   int currentScreen = 0;
@@ -23,10 +22,10 @@ class _RootScreenState extends State<RootScreen> {
   void initState() {
     super.initState();
 
-    screens =  [
+    screens = [
       HomeScreen(),
       StartScreen(),
-      ContactUsScreen(leadingIcon: false,),
+      ContactUsScreen(leadingIcon: false),
     ];
 
     pageController = PageController(initialPage: currentScreen);
@@ -40,87 +39,85 @@ class _RootScreenState extends State<RootScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return Container(
+      color: Colors.white,
+      child: SafeArea(
+        child: Scaffold(
+          // ================= BODY =================
+          body: PageView(
+            controller: pageController,
 
-      // ================= BODY =================
-      body: PageView(
-        controller: pageController,
-
-        // 🔥 يخلي الـ nav يتغير مع الـ swipe
-        onPageChanged: (index) {
-          setState(() {
-            currentScreen = index;
-          });
-        },
-
-        children: screens,
-      ),
-
-      // ================= NAV =================
-      bottomNavigationBar: Container(
-        padding: const EdgeInsets.all(10),
-        margin: const EdgeInsets.only(left:10 ,right: 10,bottom: 20),
-        decoration: BoxDecoration(
-          color: AppColors.header,
-          borderRadius: BorderRadius.circular(30),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.15),
-              blurRadius: 10,
-              offset: const Offset(0, 5),
-            ),
-          ],
-        ),
-
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(30),
-
-          child: BottomNavigationBar(
-            currentIndex: currentScreen,
-
-            onTap: (index) {
-              setState(() => currentScreen = index);
-
-              // 🔥 animation أحلى من jump
-              pageController.animateToPage(
-                index,
-                duration: const Duration(milliseconds: 300),
-                curve: Curves.easeInOut,
-              );
+            // 🔥 يخلي الـ nav يتغير مع الـ swipe
+            onPageChanged: (index) {
+              setState(() {
+                currentScreen = index;
+              });
             },
+            children: screens,
+          ),
 
-            elevation: 0,
-            backgroundColor: Colors.transparent,
-            type: BottomNavigationBarType.fixed,
-
-            selectedItemColor: Colors.black,
-            unselectedItemColor: Colors.white70,
-
-            items: [
-              BottomNavigationBarItem(
-                icon: Icon(
-                  CupertinoIcons.home,
-                  size: currentScreen == 0 ? 28 : 22, // 🔥 animation بسيطة
+          // ================= NAV =================
+          bottomNavigationBar: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10),
+            margin: const EdgeInsets.only(left: 10, right: 10, bottom: 10),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.15),
+                  blurRadius: 10,
+                  offset: const Offset(0, 5),
                 ),
-                label: AppStrings.home,
-              ),
+              ],
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(30),
+              child: BottomNavigationBar(
+                currentIndex: currentScreen,
+                onTap: (index) {
+                  setState(() => currentScreen = index);
+                  pageController.animateToPage(
+                    index,
+                    duration: const Duration(milliseconds: 300),
+                    curve: Curves.easeInOut,
+                  );
+                },
 
-              BottomNavigationBarItem(
-                icon: Icon(
-                  CupertinoIcons.add_circled,
-                  size: currentScreen == 1 ? 28 : 22,
-                ),
-                label: AppStrings.start,
-              ),
+                elevation: 0,
+                backgroundColor: Colors.transparent,
+                type: BottomNavigationBarType.fixed,
 
-              BottomNavigationBarItem(
-                icon: Icon(
-                  CupertinoIcons.mail_solid,
-                  size: currentScreen == 2 ? 28 : 22,
-                ),
-                label: AppStrings.contactUs,
+                selectedItemColor: Colors.pink,
+                unselectedItemColor: AppColors.buttoColor,
+
+                items: [
+                  BottomNavigationBarItem(
+                    icon: Icon(
+                      CupertinoIcons.home,
+                      size: currentScreen == 0 ? 22 : 20,
+                    ),
+                    label: AppStrings.home,
+                  ),
+
+                  BottomNavigationBarItem(
+                    icon: Icon(
+                      CupertinoIcons.add_circled,
+                      size: currentScreen == 1 ? 22 : 20,
+                    ),
+                    label: AppStrings.start,
+                  ),
+
+                  BottomNavigationBarItem(
+                    icon: Icon(
+                      CupertinoIcons.mail_solid,
+                      size: currentScreen == 2 ? 22 : 20,
+                    ),
+                    label: AppStrings.contactUs,
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
         ),
       ),
