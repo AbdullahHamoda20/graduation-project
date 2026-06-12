@@ -8,16 +8,19 @@ class CustomAppBar extends StatelessWidget {
 
   @override
   PreferredSizeWidget build(BuildContext context) {
-    return  AppBar(
-    leading: Image.asset(AppAssets.appBarLeadingIcon),
-    actions: [
-    IconButton(onPressed: (){
-    Navigator.push(
-    context,
-    MaterialPageRoute(builder: (_) =>  SettingsScreen()),
-    );
-    }, icon: Image.asset(AppAssets.appBarActionIcon))
-    ],
+    return AppBar(
+      leading: Image.asset(AppAssets.appBarLeadingIcon, width: 24, height: 24),
+      actions: [
+        IconButton(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => SettingsScreen()),
+            );
+          },
+          icon: Image.asset(AppAssets.appBarActionIcon),
+        ),
+      ],
     );
   }
 }
